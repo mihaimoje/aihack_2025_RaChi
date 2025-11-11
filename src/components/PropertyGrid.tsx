@@ -1,4 +1,6 @@
+import { useState } from "react";
 import { PropertyCard } from "./PropertyCard";
+import { SearchFilters } from "./SearchFilters";
 import livingRoomImage from "@/assets/living-room.jpg";
 import kitchenImage from "@/assets/kitchen.jpg";
 import bedroomImage from "@/assets/bedroom.jpg";
@@ -73,6 +75,40 @@ const properties = [
 ];
 
 export const PropertyGrid = () => {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [priceRange, setPriceRange] = useState("all");
+  const [bedrooms, setBedrooms] = useState("all");
+  const [propertyType, setPropertyType] = useState("all");
+
+  const filteredProperties = properties.filter((property) => {
+    // Location filter
+    const matchesLocation = property.location
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
+
+    // Price filter
+    const priceValue = parseInt(property.price.replace(/[^0-9]/g, ""));
+    let matchesPrice = true;
+    if (priceRange === "0-2000") matchesPrice = priceValue < 2000;
+    else if (priceRange === "2000-3000")
+      matchesPrice = priceValue >= 2000 && priceValue < 3000;
+    else if (priceRange === "3000-5000")
+      matchesPrice = priceValue >= 3000 && priceValue < 5000;
+    else if (priceRange === "5000+") matchesPrice = priceValue >= 5000;
+
+    // Bedrooms filter
+    let matchesBedrooms = true;
+    if (bedrooms === "4+") matchesBedrooms = property.bedrooms >= 4;
+    else if (bedrooms !== "all")
+      matchesBedrooms = property.bedrooms === parseInt(bedrooms);
+
+    // Property type filter
+    const matchesType =
+      propertyType === "all" || property.type === propertyType;
+
+    return matchesLocation && matchesPrice && matchesBedrooms && matchesType;
+  });
+
   return (
     <section id="properties" className="py-16 bg-muted/30">
       <div className="container">
@@ -84,12 +120,31 @@ export const PropertyGrid = () => {
             Browse our hand-picked selection of premium rental properties
           </p>
         </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {properties.map((property) => (
-            <PropertyCard key={property.id} {...property} />
-          ))}
-        </div>
+
+        <SearchFilters
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          priceRange={priceRange}
+          setPriceRange={setPriceRange}
+          bedrooms={bedrooms}
+          setBedrooms={setBedrooms}
+          propertyType={propertyType}
+          setPropertyType={setPropertyType}
+        />
+
+        {filteredProperties.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredProperties.map((property) => (
+              <PropertyCard key={property.id} {...property} />
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <p className="text-lg text-muted-foreground">
+              No properties found matching your criteria. Try adjusting your filters.
+            </p>
+          </div>
+        )}
       </div>
     </section>
   );
