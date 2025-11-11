@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { MapPin, Bed, Bath, Square } from "lucide-react";
 
 interface PropertyCardProps {
+  id: number;
   image: string;
   title: string;
   location: string;
@@ -15,6 +16,7 @@ interface PropertyCardProps {
 }
 
 export const PropertyCard = ({
+  id,
   image,
   title,
   location,
@@ -70,9 +72,11 @@ export const PropertyCard = ({
       </CardContent>
       
       <CardFooter className="pt-3 border-t">
-        <Button className="w-full" variant="outline">
-          View Details
-        </Button>
+        <a href={`/property/${id}`} className="w-full">
+          <Button className="w-full" variant="outline">
+            View Details
+          </Button>
+        </a>
       </CardFooter>
     </Card>
   );
