@@ -67,7 +67,7 @@ export default function LandlordDashboard() {
                 Manage your rental listings
               </p>
             </div>
-            <Button className="gap-2">
+            <Button className="gap-2" onClick={() => navigate("/landlord/add-property")}>
               <Plus className="h-4 w-4" />
               Add New Property
             </Button>
